@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>loja de games</title>
+</head>
+<body>
+
+    <hr>
+    <h4>Lista De Game</h4>
+    <ul id="games">
+
+    </ul>
+    <hr>
+    <h4>Novo game</h4>
+    <input type="text" name="title" id="title" placeholder="Titulo"><br>
+    <input type="number" name="price" id="price" placeholder="preço"><br>
+    <input type="number" name="year" id="year" placeholder="ano"><br>
+    <button type="button" onclick="createGame()">Criar</button>
+    <hr>
+    <h4>Editar Game</h4>
+    <input type="text" name="titleEdit" id="titleEdit" placeholder="Titulo"><br>
+    <input type="number" name="priceEdit" id="priceEdit" placeholder="preço"><br>
+    <input type="number" name="yearEdit" id="yearEdit" placeholder="ano"><br>
+    <button type="button" onclick="editGame()">Editar</button>
+    
+    
+</body>
+<script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
+<script>
+
+
+function createGame() {
+    var titleInput =document.getElementById("title");
+    var priceInput =document.getElementById("price");
+    var yearInput =document.getElementById("year");
+    var game ={
+        title: titleInput.value,
+        year:yearInput.value,
+        price:priceInput.value
+        
+    }
+
+    axios.post("http://localhost:5050/game",game).then(response =>{
+
+        if (response.status == 200) {
+            alert("Game cadastrado!");
+        }
+    }).catch(error=>{
+    console.log(error);
+    })
+}
+
+
+function deleteGame(ListItem) {
+    
+    var id = ListItem.getAttribute("data-id");
+    axios.delete("http://localhost:5050/game/"+id).then(response=>{
+alert("game deletado");
+    }).catch(error=>{
+
+    })
+}
+
+
+function editGame(ListItem) {
+    
+    var id = ListItem.getAttribute("data-id");
+    axios.put("http://localhost:5050/game/"+id).then(response=>{
+alert("game deletado");
+    }).catch(error=>{
+
+    })
+}
+    axios.get("http://localhost:5050/games").then(response=>{
+        var games = response.data;
+        var list = document.getElementById("games");
+
+        games.forEach(game => {
+
+            var item = document.createElement("li");
+
+            item.setAttribute("data-id",game.id);
+            item.setAttribute("data-title",game.title);
+            item.setAttribute("data-year",game.year);
+            item.setAttribute("data-price",game.price)
+            item.innerHTML=game.id+"-"+game.title+" $ "+game.price;
+            var deleteBtn = document.createElement("button");
+            var editBtn = document.createElement("button");
+            deleteBtn.innerHTML ="Deletar";
+            editBtn.innerHTML="Editar";
+
+            deleteBtn.addEventListener("click",function () {
+                deleteGame(item)
+            });
+            editBtn.addEventListener("click",function () {
+                editBtn(item)
+            })
+            item.appendChild(deleteBtn);
+            item.appendChild(editBtn);
+            list.appendChild(item);
+
+            console.log(game);    
+        });
+        
+    }
+
+    ).catch(error=>{
+        console.log(error);
+    })
+</script>
+</html>
